@@ -12,7 +12,7 @@ Features:
 + Install requirements.txt
 + Configure location /socket/ on your proxy settings
 + Configure your Django settings:
-++ Rest framework
+ + Rest framework
 
 ```python
 # REST
@@ -27,7 +27,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 ```
-++ ASGI and Channels
+ + ASGI and Channels
 
 ```python
 # Channels
