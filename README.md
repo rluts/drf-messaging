@@ -1,5 +1,11 @@
 # drf-messaging
-Simple websocket-based messaging app for Django 2 and Django Rest Framework
+Simple async and sync messaging app for Django 2.0 and Django Rest Framework
+
+Features:
++ Facebook-style chat amd API
++ Websocket-based chat
++ Words blacklist
++ Files attachments
 
 ### Installation:
 + Install redis-server
@@ -7,6 +13,7 @@ Simple websocket-based messaging app for Django 2 and Django Rest Framework
 + Configure location /socket/ on your proxy settings
 + Configure your Django settings:
 ++ Rest framework
+
 ```python
 # REST
 REST_FRAMEWORK = {
@@ -21,6 +28,7 @@ REST_FRAMEWORK = {
 }
 ```
 ++ ASGI and Channels
+
 ```python
 # Channels
 CHANNEL_LAYERS = {
