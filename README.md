@@ -1,8 +1,8 @@
 # drf-messaging
-Simple async and sync messaging app for Django 2.0 and Django Rest Framework
+Simple async and sync messaging app for Django Rest Framework (Django 2 only)
 
 Features:
-+ Facebook-style chat amd API
++ Facebook-style chat API
 + Websocket-based chat
 + Words blacklist
 + Files attachments
