@@ -1,0 +1,5 @@
+django==2.0.2
+channels
+redis
+channels_redis
+djangorestframework
