@@ -3,15 +3,17 @@ from rest_framework.response import Response
 from rest_framework import status
 
 
+class ClientError(Exception):
+    """
+    Custom exception class that is caught by the websocket receive()
+    handler and translated into a send back to the client.
+    """
+    def __init__(self, code):
+        super().__init__(code)
+        self.code = code
+
+
 def api_exception_handler(exc, context):
-    """
-    api errors exceptions.
-    Set 'EXCEPTION_HANDLER': 'yoga_messages.exceptions.api_exception_handler'
-    in your rest rest framework settings
-    :param exc:
-    :param context:
-    :return:
-    """
     try:
         message = str(exc.args[0])
         code = int(exc.args[1])

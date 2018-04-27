@@ -1,10 +1,11 @@
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Messages
-from .serializers import MessageSerializer, GetChatsSerializer
+from .serializers import MessageSerializer, GetChatsSerializer, UploadAttachmentSerializer
 
 
 class SendMessageView(ModelViewSet):
@@ -42,3 +43,7 @@ class OutboxMessagesView(MessagesView):
     def get(self, request, *args, **kwargs):
         self.queryset = Messages.objects.get_outbox(request.user)
         return super().get(request, *args, **kwargs)
+
+
+class UploadAttachmentView(ModelViewSet):
+    serializer_class = UploadAttachmentSerializer

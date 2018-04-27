@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     GetChatView, InboxMessagesView, OutboxMessagesView,
-    SendMessageView, GetChatsView
+    SendMessageView, GetChatsView, UploadAttachmentView
 )
 
 urlpatterns = [
@@ -10,4 +10,5 @@ urlpatterns = [
     path('inbox/', InboxMessagesView.as_view()),
     path('outbox/', OutboxMessagesView.as_view()),
     path('send/', SendMessageView.as_view({'post': 'create'})),
+    path('attachments/', UploadAttachmentView.as_view({'post': 'create'}))
 ]

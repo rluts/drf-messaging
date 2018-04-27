@@ -34,11 +34,11 @@ class MessagesManager(models.Manager):
         else:
             return False
 
-    def get_inbox(self, user, **kwargs):
-        messages = self.get_queryset().filter(receiver=user)
+    def get_inbox(self, user):
+        messages = self.get_queryset().filter(receiver=user).order_by("-pk")
         return messages
 
-    def get_outbox(self, user, **kwargs):
+    def get_outbox(self, user):
         messages = self.get_queryset().filter(sender=user)
         return messages
 
@@ -72,7 +72,6 @@ class MessagesManager(models.Manager):
 
         return qs
 
-
     def get_chat(self, sender_id, receiver_id):
         """
         Mark as read and return chat messages
@@ -82,11 +81,20 @@ class MessagesManager(models.Manager):
         """
         self.set_read(sender_id, receiver_id)
         return self.get_queryset().filter(Q(sender_id=sender_id, receiver_id=receiver_id) |
-                                              Q(sender_id=receiver_id, receiver_id=sender_id))
+                                          Q(sender_id=receiver_id, receiver_id=sender_id)).order_by("-pk")
+
+    def get_unread(self, receiver_id):
+        """
+        Get unread messages count and group by sender
+        :param receiver_id:
+        :return: queryset
+        """
+        return self.get_queryset().filter(receiver_id=receiver_id, read=False).values("sender")\
+            .annotate(count=Count("pk")).order_by("-pk")
 
     def set_read(self, receiver_id, sender_id):
         """
-        set all messages in chat as read
+        Set all messages in chat as read
         :param sender_id:
         :param receiver_id:
         :return: messages count
@@ -132,6 +140,11 @@ class Messages(models.Model):
         blank=True
     )
 
+    attachments = models.ManyToManyField(
+        "Attachment",
+        blank=True
+    )
+
     objects = MessagesManager()
 
     def save(self, force_insert=False, force_update=False, using=None,
@@ -148,3 +161,58 @@ class Messages(models.Model):
                                                  self.receiver.first_name, self.receiver.last_name,
                                                  self.receiver.profile.phone_number or self.receiver.email,
                                                  self.message[:20])
+
+
+class Attachment(models.Model):
+    class Meta:
+        verbose_name = "Attachment"
+        verbose_name_plural = "Attachments"
+
+    file = models.FileField(
+        verbose_name="File",
+        upload_to="attachments/"
+    )
+
+    owner = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+
+class UserTechInfo(models.Model):
+    user = models.OneToOneField(
+        User,
+        related_name="info",
+        on_delete=models.CASCADE
+    )
+
+    current_channel = models.CharField(
+        blank=True,
+        default="",
+        max_length=500
+    )
+
+    online = models.BooleanField(
+        default=False
+    )
+
+
+class BlackList(models.Model):
+    class Meta:
+        verbose_name = "Black list"
+        verbose_name_plural = "Black lists"
+
+    word = models.CharField(
+        max_length=200
+    )
+
+    regex = models.BooleanField(
+        verbose_name='Regular expression'
+    )
+
+    enabled = models.BooleanField(
+        default=True
+    )
+
+    def __str__(self):
+        return "regex: /%s/" % self.word if self.regex else self.word
