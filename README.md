@@ -8,11 +8,11 @@ Features:
 + Files attachments
 
 ### Installation:
-+ Install redis-server
-+ Install requirements.txt
-+ Configure location /socket/ on your proxy settings
-+ Configure your Django settings:
- + Rest framework
+* Install redis-server
+* Install requirements.txt
+* Configure location /socket/ on your proxy settings
+* Configure your Django settings:
+  * Rest framework
 
 ```python
 # REST
@@ -27,8 +27,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination'
 }
 ```
- + ASGI and Channels
-
+  * ASGI and Channels
 ```python
 # Channels
 CHANNEL_LAYERS = {
@@ -41,7 +40,8 @@ CHANNEL_LAYERS = {
 }
 ASGI_APPLICATION = "drf_messaging.routing.application"
 ```
-++ Add drf_messaging to your installed apps
+  * Add drf_messaging to your installed apps
+ 
 INSTALLED_APPS = [
 	...
     'channels',
