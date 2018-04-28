@@ -90,7 +90,7 @@ class MessagesManager(models.Manager):
         :return: queryset
         """
         return self.get_queryset().filter(receiver_id=receiver_id, read=False).values("sender")\
-            .annotate(count=Count("pk")).order_by("-pk")
+            .annotate(count=Count("pk")).order_by("-count")
 
     def set_read(self, receiver_id, sender_id):
         """
@@ -157,9 +157,9 @@ class Messages(models.Model):
 
     def __str__(self):
         return "%s %s (%s) to %s %s (%s): %s" % (self.sender.first_name, self.sender.last_name,
-                                                 self.sender.profile.phone_number or self.sender.email,
+                                                 self.sender.email,
                                                  self.receiver.first_name, self.receiver.last_name,
-                                                 self.receiver.profile.phone_number or self.receiver.email,
+                                                 self.receiver.email,
                                                  self.message[:20])
 
 

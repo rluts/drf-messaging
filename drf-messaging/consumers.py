@@ -7,8 +7,8 @@ from django.contrib.auth.models import User
 from .exceptions import ClientError
 from .models import Messages, UserTechInfo
 from asgiref.sync import AsyncToSync
-from .serializers import MessageSerializer
 from .validators import blacklist_validator
+
 
 # import the logging library
 import logging
@@ -86,28 +86,29 @@ class SocketCostumer(AsyncJsonWebsocketConsumer):
         )
 
     async def chat_message(self, event):
-        try:
+#        try:
             if event.get('source') == "signals":
-                if self.chat == getattr(event, "receiver", None) or self.chat == getattr(event, "sender", None):
+                logger.debug(str(event))
+                if event.get("sender") == "you" or (event.get('receiver') == 'you' and self.chat == event.get('sender')):
                     response = {
-                        "message": getattr(event, "message", None),
-                        "receiver": getattr(event, "message", None),
-                        "sender": getattr(event, "message", None),
+                        "message": event.get("message"),
+                        "receiver": event.get("receiver"),
+                        "sender": event.get("sender"),
                     }
-                elif getattr(event, "receiver", None) == "you":
+                elif event.get('receiver') == "you":
                     # refresh new messages if chat not joined
                     new_messages = Messages.objects.get_unread(self.scope["user"].id)
                     response = {
                         "new_messages": [{
-                            "sender": message.sender,
-                            "count": message.count
+                            "sender": message.get('sender'),
+                            "count": message.get('count')
                         } for message in new_messages]
                     }
                 else:
                     return False
                 await self.send_json(response)
-        except:
-            pass
+#        except:
+#            pass
 
     @database_sync_to_async
     def send_message(self, message):

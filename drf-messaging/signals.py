@@ -16,8 +16,8 @@ def send_message_to_socket(sender, instance, created, **kwargs):
             async_to_sync(channel_layer.send)(channel_name, {"type": "chat.message", "source": "signals",
                                                              "message": message,
                                                              "receiver": "you", "sender": instance.sender.id})
-        if getattr(instance.receiver, "info", None) and instance.sender.profile.current_channel:
-            channel_name = instance.sender.profile.current_channel
+        if getattr(instance.sender, "info", None) and instance.sender.info.current_channel:
+            channel_name = instance.sender.info.current_channel
             async_to_sync(channel_layer.send)(channel_name, {"type": "chat.message", "source": "signals",
                                                              "message": message,
                                                              "receiver": instance.receiver.id, "sender": "you"})
