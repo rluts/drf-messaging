@@ -41,7 +41,7 @@ CHANNEL_LAYERS = {
 ASGI_APPLICATION = "drf_messaging.routing.application"
 ```
   * Add drf_messaging to your installed apps
- 
+ ```python
 INSTALLED_APPS = [
 	...
     'channels',
@@ -52,3 +52,4 @@ INSTALLED_APPS = [
 	
     'drf_messaging.apps.DRFMessagingConfig'
 ]
+```
