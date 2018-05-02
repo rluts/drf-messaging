@@ -50,6 +50,6 @@ INSTALLED_APPS = [
 
 	...
 	
-    'drf_messaging.apps.DRFMessagingConfig'
+    'drf_messaging'
 ]
 ```
