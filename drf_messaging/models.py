@@ -3,6 +3,7 @@ from django.db.models import Q, Count, Max, F, Case, When, CharField, Value, Out
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.utils import timezone
+from django.conf import settings
 
 
 # Create your models here.
@@ -24,8 +25,6 @@ class MessagesManager(models.Manager):
             except Exception:
                 raise ValueError("Request error", 400)
             else:
-                if not message:
-                    raise ValueError("Message field is empty", 400)
                 if sender == receiver:
                     raise ValueError("You can't send message to yourself", 400)
 
@@ -124,7 +123,10 @@ class Messages(models.Model):
         on_delete=models.CASCADE
     )
 
-    message = models.TextField()
+    message = models.TextField(
+        blank=True,
+        null=True
+    )
 
     datetime = models.DateTimeField(
         auto_now=True
@@ -157,9 +159,9 @@ class Messages(models.Model):
 
     def __str__(self):
         return "%s %s (%s) to %s %s (%s): %s" % (self.sender.first_name, self.sender.last_name,
-                                                 self.sender.email,
+                                                 self.sender.profile.phone_number or self.sender.email,
                                                  self.receiver.first_name, self.receiver.last_name,
-                                                 self.receiver.email,
+                                                 self.receiver.profile.phone_number or self.receiver.email,
                                                  self.message[:20])
 
 
@@ -216,3 +218,29 @@ class BlackList(models.Model):
 
     def __str__(self):
         return "regex: /%s/" % self.word if self.regex else self.word
+
+
+class ReportedMessages(models.Model):
+    message = models.ForeignKey(
+        "Messages",
+        on_delete=models.CASCADE
+    )
+
+    reporter = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    datetime = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    comment = models.CharField(
+        max_length=2000,
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return self.message.message
+

@@ -1,11 +1,9 @@
-from rest_framework.generics import ListAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.response import Response
 
 from .models import Messages
-from .serializers import MessageSerializer, GetChatsSerializer, UploadAttachmentSerializer
+from .serializers import MessageSerializer, GetChatsSerializer, UploadAttachmentSerializer, ReportSerializer
 
 
 class SendMessageView(ModelViewSet):
@@ -47,3 +45,7 @@ class OutboxMessagesView(MessagesView):
 
 class UploadAttachmentView(ModelViewSet):
     serializer_class = UploadAttachmentSerializer
+
+
+class ReportMessageView(ModelViewSet):
+    serializer_class = ReportSerializer
