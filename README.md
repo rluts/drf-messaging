@@ -1,4 +1,4 @@
-# drf-messaging
+# drf-messaging (in development)
 Simple async and sync messaging app for Django Rest Framework (Django 2 only)
 
 Features:
@@ -6,6 +6,7 @@ Features:
 + Websocket-based chat
 + Words blacklist
 + Files attachments
++ Firebase Messaging notifycations
 
 ### Installation:
 * Install redis-server
