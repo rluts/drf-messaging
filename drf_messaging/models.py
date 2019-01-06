@@ -1,17 +1,60 @@
 from django.db import models
-from django.db.models import Q, Count, Max, F, Case, When, CharField, Value, OuterRef, Subquery
+from django.db.models import Q, Count, Max, F, Case, When, CharField
 from django.contrib.auth.models import User
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.utils import timezone
-from django.conf import settings
+
+from .exceptions import DRFMError
 
 
-# Create your models here.
+class FCMDevice(models.Model):
+    class Meta:
+        verbose_name = 'FCM Device'
+        verbose_name_plural = 'FCM Devices'
+
+    TYPES = (
+        ('', 'Unknown'),
+        ('ios', 'iOS'),
+        ('android', 'Android'),
+        ('web', 'Web')
+    )
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    registration_id = models.TextField()
+
+    type = models.CharField(
+        max_length=8,
+        default='',
+        choices=TYPES
+    )
+
+    active = models.BooleanField(default=True)
+
+    def __str__(self):
+        return "{}{} ({})".format("(Disabled) " if not self.active else "", self.user.username, self.type)
+
+
+class FCMNotification(models.Model):
+    class Meta:
+        verbose_name = 'FCM Notification'
+        verbose_name_plural = 'FCM Notifications'
+
+    device = models.ForeignKey(
+        FCMDevice,
+        on_delete=models.CASCADE
+    )
+
+
 class MessagesManager(models.Manager):
     def search_message(self, query):
         search_query = SearchQuery(query)
         search_vector = SearchVector('message')
-        return self.get_queryset().annotate(rank=SearchRank(search_vector, search_query)) \
+        return self.get_queryset()\
+            .annotate(rank=SearchRank(search_vector, search_query))\
             .filter(rank__gte=0.1).order_by('-rank')
 
     def send_message(self, **kwargs):
@@ -21,12 +64,12 @@ class MessagesManager(models.Manager):
                 receiver = kwargs.get('receiver') or User.objects.get(id=kwargs['receiver_id'])
                 message = kwargs.get('message')
             except User.DoesNotExist:
-                raise ValueError("User does not exist", 400)
+                raise DRFMError("User does not exist", 400)
             except Exception:
-                raise ValueError("Request error", 400)
+                raise DRFMError("Request error", 400)
             else:
                 if sender == receiver:
-                    raise ValueError("You can't send message to yourself", 400)
+                    raise DRFMError("You can't send message to yourself", 400)
 
             message = self.create(sender=sender, receiver=receiver, message=message)
             return message

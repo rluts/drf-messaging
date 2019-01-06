@@ -1,5 +1,3 @@
-from django.conf import settings
-
 from channels.generic.websocket import AsyncJsonWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.core.exceptions import ValidationError
@@ -16,8 +14,8 @@ import logging
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-class SocketCostumer(AsyncJsonWebsocketConsumer):
 
+class SocketCostumer(AsyncJsonWebsocketConsumer):
     # WebSocket event handlers
 
     def __init__(self, *args, **kwargs):
@@ -86,29 +84,26 @@ class SocketCostumer(AsyncJsonWebsocketConsumer):
         )
 
     async def chat_message(self, event):
-#        try:
-            if event.get('source') == "signals":
-                logger.debug(str(event))
-                if event.get("sender") == "you" or (event.get('receiver') == 'you' and self.chat == event.get('sender')):
-                    response = {
-                        "message": event.get("message"),
-                        "receiver": event.get("receiver"),
-                        "sender": event.get("sender"),
-                    }
-                elif event.get('receiver') == "you":
-                    # refresh new messages if chat not joined
-                    new_messages = Messages.objects.get_unread(self.scope["user"].id)
-                    response = {
-                        "new_messages": [{
-                            "sender": message.get('sender'),
-                            "count": message.get('count')
-                        } for message in new_messages]
-                    }
-                else:
-                    return False
-                await self.send_json(response)
-#        except:
-#            pass
+        if event.get('source') == "signals":
+            logger.debug(str(event))
+            if event.get("sender") == "you" or (event.get('receiver') == 'you' and self.chat == event.get('sender')):
+                response = {
+                    "message": event.get("message"),
+                    "receiver": event.get("receiver"),
+                    "sender": event.get("sender"),
+                }
+            elif event.get('receiver') == "you":
+                # refresh new messages if chat not joined
+                new_messages = Messages.objects.get_unread(self.scope["user"].id)
+                response = {
+                    "new_messages": [{
+                        "sender": message.get('sender'),
+                        "count": message.get('count')
+                    } for message in new_messages]
+                }
+            else:
+                return False
+            await self.send_json(response)
 
     @database_sync_to_async
     def send_message(self, message):
@@ -140,6 +135,5 @@ class SocketCostumer(AsyncJsonWebsocketConsumer):
             profile.current_channel = ""
             profile.online = False
             profile.save()
-        except:
+        except Exception:
             pass
-

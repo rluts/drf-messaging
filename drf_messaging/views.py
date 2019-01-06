@@ -1,12 +1,12 @@
-from rest_framework.generics import ListAPIView
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.generics import ListAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from .models import Messages
 from .serializers import MessageSerializer, GetChatsSerializer, UploadAttachmentSerializer, ReportSerializer
 
 
-class SendMessageView(ModelViewSet):
+class SendMessageView(CreateAPIView):
+    permission_classes = (IsAuthenticated, )
     serializer_class = MessageSerializer
 
 
@@ -43,9 +43,11 @@ class OutboxMessagesView(MessagesView):
         return super().get(request, *args, **kwargs)
 
 
-class UploadAttachmentView(ModelViewSet):
+class UploadAttachmentView(CreateAPIView):
+    permission_classes = (IsAuthenticated, )
     serializer_class = UploadAttachmentSerializer
 
 
-class ReportMessageView(ModelViewSet):
+class ReportMessageView(CreateAPIView):
+    permission_classes = (IsAuthenticated, )
     serializer_class = ReportSerializer

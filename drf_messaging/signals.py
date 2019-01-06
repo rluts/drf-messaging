@@ -5,7 +5,7 @@ from channels.layers import get_channel_layer
 from asgiref.sync import async_to_sync
 from .models import Messages
 from .utils import get_user_info_from_instance
-from fcm_django.models import FCMDevice
+# from fcm_django.models import FCMDevice
 
 
 @receiver(post_save, sender=Messages)
@@ -23,18 +23,18 @@ def send_message_to_socket(sender, instance, created, **kwargs):
             async_to_sync(channel_layer.send)(channel_name, {"type": "chat.message", "source": "signals",
                                                              "message": message,
                                                              "receiver": instance.receiver.id, "sender": "you"})
-        fcm_devices = FCMDevice.objects.filter(user=instance.receiver)
-        if fcm_devices:
-            data = {
-                "message": {
-                    "sender": get_user_info_from_instance(instance.sender),
-                    "message": message
-                }
-            }
-            new_messages = Messages.objects.get_unread(instance.receiver)
-            data['new_messages'] = [{
-                "sender": get_user_info_from_instance(instance.sender),
-                "count": message.get('count')
-            } for message in new_messages]
-
-            fcm_devices.send_message(data=data)
+        # fcm_devices = FCMDevice.objects.filter(user=instance.receiver)
+        # if fcm_devices:
+        #     data = {
+        #         "message": {
+        #             "sender": get_user_info_from_instance(instance.sender),
+        #             "message": message
+        #         }
+        #     }
+        #     new_messages = Messages.objects.get_unread(instance.receiver)
+        #     data['new_messages'] = [{
+        #         "sender": get_user_info_from_instance(instance.sender),
+        #         "count": message.get('count')
+        #     } for message in new_messages]
+        #
+        #     fcm_devices.send_message(data=data)

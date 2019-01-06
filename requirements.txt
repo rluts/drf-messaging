@@ -1,5 +1,9 @@
 django>=2.0.8
-channels
+channels>=2.0.0
 redis
 channels_redis
 djangorestframework
+pyfcm
+asgiref
+
+psycopg2-binary

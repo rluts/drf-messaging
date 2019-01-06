@@ -4,7 +4,6 @@ from .views import (
     SendMessageView, GetChatsView, UploadAttachmentView,
     ReportMessageView
 )
-from fcm_django.api.rest_framework import FCMDeviceAuthorizedViewSet
 
 urlpatterns = [
     path('chat/', GetChatView.as_view()),
@@ -14,5 +13,4 @@ urlpatterns = [
     path('send/', SendMessageView.as_view({'post': 'create'})),
     path('attachments/', UploadAttachmentView.as_view({'post': 'create'})),
     path('report/', ReportMessageView.as_view({'post': 'create'})),
-    path('devices/', FCMDeviceAuthorizedViewSet.as_view({'post': 'create'}), name='create_fcm_device')
 ]

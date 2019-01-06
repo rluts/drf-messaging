@@ -1,4 +1,6 @@
 from rest_framework.authtoken.models import Token
+from django.db import close_old_connections
+from django.contrib.auth.models import AnonymousUser
 
 
 class TokenAuthMiddleware:
@@ -11,7 +13,14 @@ class TokenAuthMiddleware:
 
     def __call__(self, scope):
         query = dict((x.split('=') for x in scope['query_string'].decode().split("&")))
-        token = query['token']
-        token = Token.objects.get(key=token)
-        scope['user'] = token.user
+        if not query.get('token', None):
+            scope['user'] = AnonymousUser()
+        else:
+            try:
+                token = query['token']
+                token = Token.objects.get(key=token)
+                scope['user'] = token.user
+                close_old_connections()
+            except Token.DoesNotExist:
+                scope['user'] = AnonymousUser()
         return self.inner(scope)
