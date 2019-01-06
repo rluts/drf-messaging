@@ -6,4 +6,3 @@ djangorestframework
 pyfcm
 asgiref
 
-psycopg2-binary
